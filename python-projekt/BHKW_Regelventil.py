@@ -72,7 +72,7 @@ einschwing_2 = berechne_einschwingzeit(200, 45.0)
 # --- Ausgabe Einschwingzeit + Ventilstellung ---
 #print("\n📊 Einschwingzeiten:")
 #if einschwing_1 is not None:
-    print(f"✅ Einschwingzeit auf 40 °C: {einschwing_1} Sekunden")
+#    print(f"✅ Einschwingzeit auf 40 °C: {einschwing_1} Sekunden")
 #else:
 #    print("❌ Keine stabile Einschwingung auf 40 °C")
 
