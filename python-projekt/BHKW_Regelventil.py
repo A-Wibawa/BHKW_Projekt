@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 
 # --- PID Parameter ---
-Kp = 3.0
-Ki = 0.2
+Kp = 2.0
+Ki = 0.15
 Kd = 0.0  # Kein D-Anteil für Stabilität
 
 # --- Systemparameter ---
@@ -14,15 +14,15 @@ T_ist = 28.0
 dt = 1.0
 sim_time = 400
 totzone = 0.3
-reset_band = 0.5
-traegheit = 0.05
+reset_band = 0.2
+traegheit = 0.04
 
 # --- Sollwertprofil ---
 def sollwert(t):
-    return 40.0 if t < 200 else 45.0
+    return 42.0 #if t < 200 else 47.0
 
 # --- Initialisierung ---
-integral = 0.0
+integral = max(min(integral, 100), -100)
 last_error = 0.0
 temps = []
 ventil_oeffnung = []
@@ -70,23 +70,23 @@ einschwing_1 = berechne_einschwingzeit(0, 40.0)
 einschwing_2 = berechne_einschwingzeit(200, 45.0)
 
 # --- Ausgabe Einschwingzeit + Ventilstellung ---
-print("\n📊 Einschwingzeiten:")
-if einschwing_1 is not None:
+#print("\n📊 Einschwingzeiten:")
+#if einschwing_1 is not None:
     print(f"✅ Einschwingzeit auf 40 °C: {einschwing_1} Sekunden")
-else:
-    print("❌ Keine stabile Einschwingung auf 40 °C")
+#else:
+#    print("❌ Keine stabile Einschwingung auf 40 °C")
 
-if einschwing_2 is not None:
-    print(f"✅ Einschwingzeit auf 45 °C (nach Sprung): {einschwing_2 - 200} Sekunden (ab Sekunde 200)")
-else:
-    print("❌ Keine stabile Einschwingung auf 45 °C")
+#if einschwing_2 is not None:
+#    print(f"✅ Einschwingzeit auf 45 °C (nach Sprung): {einschwing_2 - 200} Sekunden (ab Sekunde 200)")
+#else:
+#    print("❌ Keine stabile Einschwingung auf 45 °C")
 
 # 🔧 Ventilstellung am Ende:
 print(f"\n🟢 Letzte Ventilöffnung: {ventil_oeffnung[-1]:.1f} %")
 
 # --- Plot mit Legenden ---
 fig, ax1 = plt.subplots(figsize=(10, 5))
-ax1.set_title("Stabilisierte PID-Regelung mit Trägheit, Anti-Zittern und Legende")
+ax1.set_title("PID-Regelung - Regelventil")
 ax1.set_xlabel("Zeit [s]")
 ax1.set_ylabel("T_vorlauf [°C]", color='tab:blue')
 l1 = ax1.plot(temps, label="Vorlauftemperatur (Ist)", color='tab:blue')
