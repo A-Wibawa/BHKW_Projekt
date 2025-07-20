@@ -39,13 +39,13 @@ def anlagensteuerung_bhkw(
         status_text = "BHKW aus: Schalter ist ausgeschaltet"
     #    e) Innerhalb der gewünschten Betriebszeit einschalten
     elif 6 <= aktuelle_stunde < 22:
-        status_text = "BHKW ein"
+        status_text = "BHKW ein: in Ordnung"
     #    f) Außerhalb der Betriebszeit ausschalten
     else:
         status_text = "BHKW aus: außerhalb der Betriebszeit"
 
     # 4. Ergebnis-String zusammenstellen und zurückgeben
-    return f"{status_text} um {aktuelle_zeit.strftime('%H:%M:%S')}"
+    return f"{status_text}" #um {aktuelle_zeit.strftime('%H:%M:%S')}
 
 # Beispielaufruf
 if __name__ == "__main__":
