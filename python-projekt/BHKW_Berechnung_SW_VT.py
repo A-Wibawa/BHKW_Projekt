@@ -20,30 +20,45 @@ def berechnung_heizkennlinie(
     current_hour: Optional[int] = None
 ) -> float:
     """
-    Berechnet die Soll-Vorlauftemperatur anhand der Heizkennlinie,
-    mit Nachtabsenkung und optionaler Raumkompensation.
+    Berechnet die Soll-Vorlauftemperatur anhand einer Heizkennlinie
+    und zusätzlicher Raumtemperaturkompensation sowie Nachtabsenkung.
+
+    Rückgabe:
+        Soll-Vorlauftemperatur in °C (auf min begrenzt, max optional begrenzt)
     """
-    # Stunde bestimmen
-    stunde = current_hour if current_hour is not None else datetime.now().hour
-    # Nachtabsenkung
+
+    # 1. Aktuelle Stunde ermitteln
+    jetzt = datetime.now()
+    stunde = jetzt.hour
+
+    # 2. Nachtabsenkung aktiv von 22:00 bis 06:00?
     ist_nacht = (stunde >= 22) or (stunde < 6)
-    # Basis-Kennlinie
-    basis = (
+
+    # 3. Basis: Heizkurve (K * (T_norm - T_außen)**exponent + B)
+    basis_vorlauf = (
         kurve_steilheit
         * (norm_raumtemperatur - messwert_außentemperatur) ** kurve_exponent
         + kurve_fixpunkt
     )
+
+    # 4. Nachtabsenkung abziehen (falls aktiv)
     if ist_nacht:
-        basis -= nachtabsenkung_delta
-    # Raumkompensation
+        basis_vorlauf -= nachtabsenkung_delta
+
+    # 5. Raumtemperaturkompensation (nur bei Freigabe)
     if raumtemp_komp_freigabe:
-        diff = sollwert_raumtemperatur - messwert_raumtemperatur
-        basis += diff * (raumtemp_komp_prozent / 100)
-    # Begrenzung
-    temp_vl = max(basis, min_vorlauftemp)
-    if max_vorlauftemp is not None:
-        temp_vl = min(temp_vl, max_vorlauftemp)
-    return temp_vl
+        diff_raummess = sollwert_raumtemperatur - messwert_raumtemperatur
+        kompensation = diff_raummess * (raumtemp_komp_prozent / 100)
+        basis_vorlauf += kompensation
+
+    # 6. Begrenzung auf min und optional auf max
+    soll_vorlauftemp = basis_vorlauf
+    if soll_vorlauftemp < min_vorlauftemp:
+        soll_vorlauftemp = min_vorlauftemp
+    if max_vorlauftemp is not None and soll_vorlauftemp > max_vorlauftemp:
+        soll_vorlauftemp = max_vorlauftemp
+
+    return soll_vorlauftemp
 
 # Funktion zur Visualisierung der reinen Heizkennlinie
 def plot_heizkennlinie(
@@ -54,20 +69,34 @@ def plot_heizkennlinie(
     max_vorlauftemp: Optional[float],
     norm_raumtemperatur: float
 ) -> None:
-    ta_range = np.linspace(-10, 10, 100)
+    """
+    Plottet die Heizkennlinie (ohne Nachtabsenkung und Raumkompensation)
+    über einen Außentemperatur-Bereich von -10 bis +20 °C.
+
+    max_vorlauftemp optional: bei None kein oberes Limit.
+    """
+
+    # Außentemperaturen von -10 bis +20 °C
+    ta_range = np.linspace(-10, 20, 100)
+
+    # Heizkurve berechnen
     vl_range = (
         kurve_steilheit
         * (norm_raumtemperatur - ta_range) ** kurve_exponent
         + kurve_fixpunkt
     )
+
+    # Auf minimale Vorlauftemperatur beschneiden
     vl_clipped = np.maximum(vl_range, min_vorlauftemp)
+    # Oberes Limit nur, wenn angegeben
     if max_vorlauftemp is not None:
         vl_clipped = np.minimum(vl_clipped, max_vorlauftemp)
-    plt.figure(figsize=(6, 4))
+
+    # Plot erstellen
     plt.plot(ta_range, vl_clipped, label="Heizkennlinie")
     plt.xlabel("Außentemperatur (°C)")
     plt.ylabel("Vorlauftemperatur (°C)")
-    plt.title("Heizkennlinie")
+    plt.title("Heizkennlinie ohne Zusatzkompensation")
     plt.grid(True)
     plt.legend()
     plt.show()
