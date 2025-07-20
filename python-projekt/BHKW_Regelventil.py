@@ -1,28 +1,28 @@
 import matplotlib.pyplot as plt
 
 # --- PID Parameter ---
-Kp = 2.0
-Ki = 0.15
+Kp = 3.0
+Ki = 0.1
 Kd = 0.0  # Kein D-Anteil für Stabilität
+
+# --- Regler-Einstellungen ---
+dt = 1.0
+sim_time = 400
+totzone = 0.3
+reset_band = 0.5
+traegheit = 0.05
 
 # --- Systemparameter ---
 T_kessel = 95
 T_ruecklauf = 30.0
 T_ist = 28.0
 
-# --- Regler-Einstellungen ---
-dt = 1.0
-sim_time = 400
-totzone = 0.3
-reset_band = 0.2
-traegheit = 0.04
-
 # --- Sollwertprofil ---
 def sollwert(t):
-    return 42.0 #if t < 200 else 47.0
+    return 40.0 if t < 200 else 45.0
 
 # --- Initialisierung ---
-integral = max(min(integral, 100), -100)
+integral = 0.0
 last_error = 0.0
 temps = []
 ventil_oeffnung = []
@@ -86,7 +86,7 @@ print(f"\n🟢 Letzte Ventilöffnung: {ventil_oeffnung[-1]:.1f} %")
 
 # --- Plot mit Legenden ---
 fig, ax1 = plt.subplots(figsize=(10, 5))
-ax1.set_title("PID-Regelung - Regelventil")
+ax1.set_title("Stabilisierte PID-Regelung mit Trägheit, Anti-Zittern und Legende")
 ax1.set_xlabel("Zeit [s]")
 ax1.set_ylabel("T_vorlauf [°C]", color='tab:blue')
 l1 = ax1.plot(temps, label="Vorlauftemperatur (Ist)", color='tab:blue')
