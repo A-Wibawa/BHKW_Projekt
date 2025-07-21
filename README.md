@@ -1,2 +1,2 @@
 # BHKW_Projekt
-Automationslogarithmus BHKW
+Automationsalgorithmus BHKW
