@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 # --- PID Parameter ---
 Kp = 3.0
 Ki = 0.1
-Kd = 0.0  # Kein D-Anteil für Stabilität
+Kd = 0.0  
 
 # --- Regler-Einstellungen ---
 dt = 1.0
