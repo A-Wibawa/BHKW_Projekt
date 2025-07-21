@@ -1,3 +1,4 @@
+
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Optional
@@ -120,7 +121,7 @@ if __name__ == "__main__":
         1, 1, 2, 4, 5, 6, 8, 10, 12, 14, 15, 16,
         17, 16, 15, 14, 12, 10, 8, 6, 4, 3, 2, 1
     ]
-    hours = list(range(1, len(outside_temps) + 1))
+    hours = list(range(1, len(Außentemp) + 1))
 
     # 2. Vorlauftemperaturen simulieren
     vl_temps = [
@@ -139,7 +140,7 @@ if __name__ == "__main__":
             RT_KOMP_P,
             current_hour=(hour-1)
         )
-        for hour, ta in zip(hours, outside_temps)
+        for hour, ta in zip(hours, Außentemp)
     ]
 
     # 3. Ausgabe der Simulation
